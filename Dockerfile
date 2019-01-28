@@ -86,15 +86,6 @@ COPY config/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 
 RUN chown -R airflow: ${AIRFLOW_HOME}
 
-# This fixes permission issues on linux. 
-# The airflow user should have the same UID as the user running docker on the host system.
-# To set it automatically, run 'docker build --build-arg DOCKER_UID=`id -u` --rm -t my-airflow .'
-ARG DOCKER_UID
-RUN \
-    : "${DOCKER_UID:?Build argument DOCKER_UID needs to be set and non-empty.}" \
-    && usermod -u ${DOCKER_UID} airflow \
-    && echo "Set airflow's uid to ${DOCKER_UID}"
-
 # This fixes high CPU load in airflow 1.10
 COPY config/af_1.10_high_cpu.patch /root/af_1.10_high_cpu.patch
 RUN patch -d /usr/local/lib/python3.6/site-packages/airflow/ < /root/af_1.10_high_cpu.patch; \
