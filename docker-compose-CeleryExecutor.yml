@@ -2,7 +2,7 @@ version: '2.1'
 services:
     redis:
         image: 'redis:3.2.7'
-        # command: redis-server --requirepass redispass
+        command: redis-server --requirepass myredispass
 
     postgres:
         image: postgres:9.6
@@ -11,12 +11,14 @@ services:
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
         # Uncomment these lines to persist data on the local filesystem.
-        #     - PGDATA=/var/lib/postgresql/data/pgdata
-        # volumes:
-        #     - ./pgdata:/var/lib/postgresql/data/pgdata
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        volumes:
+            - ./pgdata:/var/lib/postgresql/data/pgdata
+        ports:
+            - "5455:5432"
 
     webserver:
-        image: puckel/docker-airflow:1.10.0-5
+        image: jpipas/docker-airflow:latest
         restart: always
         depends_on:
             - postgres
@@ -25,12 +27,15 @@ services:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
-            # - REDIS_PASSWORD=redispass
+            # - AIRFLOW__WEBSERVER__RBAC=true
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+            - REDIS_PASSWORD=myredispass
         volumes:
-            - ./dags:/usr/local/airflow/dags
+            # - ./dags:/usr/local/airflow/dags
+            - /Users/jpipas/Projects/shepherd-etl/dags:/usr/local/airflow/dags
+            # - /Users/jpipas/airflow/webserver_config.py:/usr/local/airflow/webserver_config.py
             # Uncomment to include custom plugins
             # - ./plugins:/usr/local/airflow/plugins
         ports:
@@ -43,50 +48,54 @@ services:
             retries: 3
 
     flower:
-        image: puckel/docker-airflow:1.10.0-5
+        image: jpipas/docker-airflow:latest
         restart: always
         depends_on:
             - redis
         environment:
             - EXECUTOR=Celery
-            # - REDIS_PASSWORD=redispass
+            - REDIS_PASSWORD=myredispass
         ports:
             - "5555:5555"
         command: flower
 
     scheduler:
-        image: puckel/docker-airflow:1.10.0-5
+        image: jpipas/docker-airflow:latest
         restart: always
         depends_on:
             - webserver
         volumes:
-            - ./dags:/usr/local/airflow/dags
+            # - ./dags:/usr/local/airflow/dags
+            - /Users/jpipas/Projects/shepherd-etl/dags:/usr/local/airflow/dags
+            # - /Users/jpipas/airflow/webserver_config.py:/usr/local/airflow/webserver_config.py
             # Uncomment to include custom plugins
             # - ./plugins:/usr/local/airflow/plugins
         environment:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
-            # - REDIS_PASSWORD=redispass
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+            - REDIS_PASSWORD=myredispass
         command: scheduler
 
     worker:
-        image: puckel/docker-airflow:1.10.0-5
+        image: jpipas/docker-airflow:latest
         restart: always
         depends_on:
             - scheduler
         volumes:
             - ./dags:/usr/local/airflow/dags
+            - /Users/jpipas/Projects/shepherd-etl/dags:/usr/local/airflow/dags
+            # - /Users/jpipas/airflow/webserver_config.py:/usr/local/airflow/webserver_config.py
             # Uncomment to include custom plugins
             # - ./plugins:/usr/local/airflow/plugins
         environment:
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
-            # - REDIS_PASSWORD=redispass
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+            - REDIS_PASSWORD=myredispass
         command: worker
