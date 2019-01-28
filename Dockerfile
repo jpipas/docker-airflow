@@ -65,7 +65,6 @@ RUN set -ex \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
     && pip install pymssql==2.1.1 \
-    && pip install -e /sky-python-sdk \
     && pip install flask-appbuilder==1.11.1 \
     && pip install apache-airflow[crypto,celery,postgres,mssql,s3,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
     && pip install 'celery[redis]>=4.1.1,<4.2.0' \
