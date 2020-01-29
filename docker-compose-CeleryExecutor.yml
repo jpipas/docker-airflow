@@ -1,9 +1,9 @@
 version: '2.1'
 services:
     redis:
-        image: 'redis:3.2.7'
-        command: redis-server --requirepass myredispass
-
+        image: 'redis:5.0.5'
+        # command: redis-server --requirepass redispass
+        
     postgres:
         image: postgres:9.6
         environment:
@@ -18,7 +18,7 @@ services:
             - "5455:5432"
 
     webserver:
-        image: jpipas/docker-airflow:latest
+        image: puckel/docker-airflow:1.10.7
         restart: always
         depends_on:
             - postgres
@@ -48,7 +48,7 @@ services:
             retries: 3
 
     flower:
-        image: jpipas/docker-airflow:latest
+        image: puckel/docker-airflow:1.10.7
         restart: always
         depends_on:
             - redis
@@ -60,7 +60,7 @@ services:
         command: flower
 
     scheduler:
-        image: jpipas/docker-airflow:latest
+        image: puckel/docker-airflow:1.10.7
         restart: always
         depends_on:
             - webserver
@@ -81,7 +81,7 @@ services:
         command: scheduler
 
     worker:
-        image: jpipas/docker-airflow:latest
+        image: puckel/docker-airflow:1.10.7
         restart: always
         depends_on:
             - scheduler
