@@ -37,6 +37,7 @@ services:
             - /Users/jpipas/Projects/shepherd-etl/dags:/usr/local/airflow/dags
             # - /Users/jpipas/airflow/webserver_config.py:/usr/local/airflow/webserver_config.py
             # Uncomment to include custom plugins
+            - /Users/jpipas/Projects/shepherd-etl/plugins:/usr/local/airflow/plugins
             # - ./plugins:/usr/local/airflow/plugins
         ports:
             - "8080:8080"

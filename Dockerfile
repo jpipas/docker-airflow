@@ -1,8 +1,8 @@
 # VERSION 1.10.7
 # AUTHOR: Matthieu "Puckel_" Roisil
 # DESCRIPTION: Basic Airflow container
-# BUILD: docker build --rm -t jpipas/docker-airflow .
-# SOURCE: https://github.com/jpipas/docker-airflow
+# BUILD: docker build --rm -t puckel/docker-airflow .
+# SOURCE: https://github.com/puckel/docker-airflow
 
 FROM python:3.7-slim-stretch
 LABEL maintainer="Puckel_"
@@ -59,11 +59,9 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install pymssql==2.1.1 \
-    && pip install flask-appbuilder==1.11.1 \
+    && pip install pymssql==2.1.4 \
     && pip install apache-airflow[crypto,celery,postgres,mssql,s3,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION} \
-    && pip install 'celery[redis]>=4.1.1,<4.2.0' \
-    && pip install 'redis>=2.10.5, <3.0.0' \
+    && pip install 'redis==3.2' \
     && if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get autoremove -yqq --purge \
